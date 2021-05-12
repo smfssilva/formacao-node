@@ -1,32 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Loja de Games</title>
-</head>
-<body>
-    
+  </head>
+  <body>
     <h4>Lista de games</h4>
     <ul id="games"></ul>
 
-</body>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>     
-<script>
-    axios.get("http://localhost:8080/games").then(response => {
+    <h4>Novo game</h4>
+    <input type="text" name="title" id="title" placeholder="Título" /><br />
+    <input type="text" name="year" id="year" placeholder="Ano" /><br />
+    <input type="number" name="price" id="price" placeholder="Preço" /><br />
+    <button type="button" onclick="newGame()">Criar</button>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    function newGame() {
+      const titleInput = document.getElementById("title");
+      const yearInput = document.getElementById("year");
+      const priceInput = document.getElementById("price");
+
+      const game = {
+        title: titleInput.value,
+        year: yearInput.value,
+        price: priceInput.value,
+      };
+
+      axios
+        .post("http://localhost:8080/game", game)
+        .then((response) => {
+          if (response.status === 200) {
+            alert("Game cadastrado!");
+          }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
+
+    axios
+      .get("http://localhost:8080/games")
+      .then((response) => {
         let games = response.data;
 
-        let list = document.getElementById('games')
+        let list = document.getElementById("games");
 
-        games.forEach(game => {
-            let item = document.createElement('li');
-            item.innerHTML = `${game.id} - ${game.title} - R$ ${game.price.toFixed(2)}`;
-            list.appendChild(item )
+        games.forEach((game) => {
+          let item = document.createElement("li");
+          item.innerHTML = `${game.id} - ${
+            game.title
+          } - R$ ${game.price}`;
+          list.appendChild(item);
         });
-
-    }).catch(err => {
+      })
+      .catch((err) => {
         console.log(err);
-    })
-</script>
+      });
+  </script>
 </html>
