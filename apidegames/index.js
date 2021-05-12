@@ -28,6 +28,20 @@ const DB = {
             year: 2012,
             price: 20
         }
+    ],
+    users: [
+        {
+            id: 1,
+            name: "Sivanilson",
+            email: "smfssilva@yahoo.com",
+            password: "acs985862"
+        },
+        {
+            id: 2,
+            name: "Maciel",
+            email: "maciel@yahoo.com",
+            password: "123123"
+        }
     ]
 }
 
@@ -116,6 +130,32 @@ app.put("/game/:id", (req, res) => {
         }
 
     }
+})
+
+app.post('auth', (req, res)=>{
+
+    let {email,password} = req.body;
+    
+    if (email != undefined){
+        DB.users.find(u => u.email == email)
+
+        if (user != undefined){
+            if (user.password == password){
+                res.status = 200;
+                res.json({token: "TOKEN FALSO"})
+            }else{
+                res.status = 401
+                res.json({err: "Credenciais inválido"})
+            }
+        }else{
+            res.status = 404;
+            res.json({err: "O e-mail enviado não existe"})
+        }
+    }else {
+        res.status = 400
+        res.json({err: "O E-mail é inválido"})        
+    }
+
 })
 
 app.listen(8080, () => {
