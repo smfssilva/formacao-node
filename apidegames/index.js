@@ -9,6 +9,35 @@ app.use(cors())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
+
+function auth(req, res, next){
+
+    const authToken = req.headers['authorization']
+    
+    if (authToken != undefined){
+        const token = authToken.split(' ')[1]
+
+        jwt.verify(token, JWTSecret, (err, data)=>{
+            if (err){
+                res.status(401);
+                res.json({err: "Token inválido"});
+            }else{
+                // console.log(data);
+                req.token = token;
+                req.loggedUser = {id: data.id, email: data.email, name: data.name}
+                next();
+            }
+        })
+    }else{
+        res.status(401)
+        res.json({err: "Token inválido"})
+    }
+    
+
+}
+
+
+
 const DB = {
     games: [
         {
@@ -47,12 +76,12 @@ const DB = {
 }
 
 
-app.get("/games", (req, res) => {
+app.get("/games", auth, (req, res) => {
     res.statusCode = 200
-    res.json(DB.games)
+    res.json({user: req.loggedUser, games: DB.games})
 })
 
-app.get("/game/:id", (req, res) => {
+app.get("/game/:id", auth, (req, res) => {
 
     if (isNaN(req.params.id)) {
         res.send(400)
@@ -71,7 +100,7 @@ app.get("/game/:id", (req, res) => {
     }
 })
 
-app.post("/game", (req, res) => {
+app.post("/game", auth, (req, res) => {
     let { title, price, year } = req.body;
     DB.games.push({
         id: 2323,
@@ -83,7 +112,7 @@ app.post("/game", (req, res) => {
     res.sendStatus(200)
 })
 
-app.delete("/game/:id", (req, res) => {
+app.delete("/game/:id", auth, (req, res) => {
     if (isNaN(req.params.id)) {
         res.send(400)
     } else {
@@ -101,7 +130,7 @@ app.delete("/game/:id", (req, res) => {
     }
 })
 
-app.put("/game/:id", (req, res) => {
+app.put("/game/:id", auth, (req, res) => {
     if (isNaN(req.params.id)) {
         res.send(400)
     } else {
@@ -133,7 +162,7 @@ app.put("/game/:id", (req, res) => {
     }
 });
 
-app.post("/auth", (req, res) => {
+app.post("/auth", auth, (req, res) => {
 
     var {email, password} = req.body;
 
@@ -145,7 +174,7 @@ app.post("/auth", (req, res) => {
         if (user != undefined) {
             if (user.password == password) {
 
-                jwt.sign({id: user.id, email: user.email}, JWTSecret,{expiresIn:'48h'},(err, token)=>{
+                jwt.sign({id: user.id, email: user.email, name: user.name}, JWTSecret,{expiresIn:'48h'},(err, token)=>{
                     if (err) {
                         res.status(400)
                         res.json({err: "Falha interna"})
