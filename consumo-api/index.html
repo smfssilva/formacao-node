@@ -13,11 +13,24 @@
     <h4>Novo game</h4>
     <input type="text" name="title" id="title" placeholder="Título" /><br />
     <input type="text" name="year" id="year" placeholder="Ano" /><br />
-    <input type="number" name="price" id="price" placeholder="Preço" /><br />
+    <input
+      type="text"
+      name="price"
+      id="price"
+      placeholder="Preço"
+      onkeypress="$(this).mask('R$ 999.990,00', {reverse: true})"
+    /><br />
     <button type="button" onclick="newGame()">Criar</button>
-  </body>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script>
+
+</body>
+<script
+  	src="https://code.jquery.com/jquery-3.6.0.js"
+  	integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+  	crossorigin="anonymous">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
     function newGame() {
       const titleInput = document.getElementById("title");
       const yearInput = document.getElementById("year");
@@ -37,12 +50,11 @@
           }
         })
         .catch((err) => {
-            console.log(err);
+          console.log(err);
         });
     }
 
-    axios
-      .get("http://localhost:8080/games")
+    axios.get("http://localhost:8080/games")
       .then((response) => {
         let games = response.data;
 
@@ -50,10 +62,14 @@
 
         games.forEach((game) => {
           let item = document.createElement("li");
-          item.innerHTML = `${game.id} - ${
-            game.title
-          } - R$ ${game.price}`;
-          list.appendChild(item);
+
+
+			item.setAttribute('data-id', game.id);
+			item.setAttribute('data-title', game.title);
+			item.setAttribute('data-year', game.year);
+			item.setAttribute('data-price', game.price);
+			item.innerHTML = `${game.id} - ${game.title} - R$ ${game.price}`;
+        	list.appendChild(item);
         });
       })
       .catch((err) => {
