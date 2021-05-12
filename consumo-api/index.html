@@ -21,6 +21,20 @@
       onkeypress="$(this).mask('R$ 999.990,00', {reverse: true})"
     /><br />
     <button type="button" onclick="newGame()">Criar</button>
+	<br>
+	<br>
+	<h4>Editar game</h4>
+    <input type="text" name="idedit" id="idedit" placeholder="ID" disabled/><br />
+    <input type="text" name="titleedit" id="titleedit" placeholder="Título" /><br />
+    <input type="text" name="yearedit" id="yearedit" placeholder="Ano" /><br />
+    <input
+      type="text"
+      name="priceedit"
+      id="priceedit"
+      placeholder="Preço"
+      onkeypress="$(this).mask('R$ 999.990,00', {reverse: true})"
+    /><br />
+    <button type="button" onclick="editGame()">Salvar</button>
 
 </body>
 <script
@@ -31,7 +45,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    function newGame() {
+    
+	function newGame() {
       const titleInput = document.getElementById("title");
       const yearInput = document.getElementById("year");
       const priceInput = document.getElementById("price");
@@ -55,6 +70,35 @@
     }
 
 
+    function editGame() {
+		
+		const idInput = document.getElementById("idedit");
+		const titleInput = document.getElementById("titleedit");
+		const yearInput = document.getElementById("yearedit");
+		const priceInput = document.getElementById("priceedit");
+
+		const game = {
+			id: idInput.value,
+			title: titleInput.value,
+			year: yearInput.value,
+			price: priceInput.value,
+		};
+
+		let id = idInput.value
+
+		axios
+		.put("http://localhost:8080/game/"+id, game)
+		.then((response) => {
+			if (response.status === 200) {
+			alert("Game alterado!");
+			}
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+    }
+
+
 	function deleteGame(listItem) {
 		const id = listItem.getAttribute("data-id")
 		let confirmar = confirm("Confirma a deleção do game?");
@@ -68,6 +112,18 @@
 			})
 		}
 	}
+
+	function loadForm(listitem){
+		const id = listitem.getAttribute('data-id');
+		const title = listitem.getAttribute('data-title');
+		const year = listitem.getAttribute('data-year');
+		const price = listitem.getAttribute('data-price');
+		document.getElementById('idedit').value = id
+		document.getElementById('titleedit').value = title
+		document.getElementById('yearedit').value = year
+		document.getElementById('priceedit').value = price
+	}
+
 
     axios.get("http://localhost:8080/games")
       .then((response) => {
@@ -94,6 +150,14 @@
 				deleteGame(item)
 			})
 
+			let editBtn = document.createElement('button')
+			editBtn.innerHTML = 'Editar'
+			editBtn.addEventListener('click', ()=> {
+				loadForm(item)
+			})
+			
+
+			item.appendChild(editBtn)
 			item.appendChild(deleteBtn);
         	list.appendChild(item);
         });
