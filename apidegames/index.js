@@ -1,11 +1,12 @@
 const express = require("express")
 const app = express()
-
 const cors = require('cors')
+const jwt = require('jsonwebtoken')
+
+const JWTSecret = "fhjaslfjdsklçfjklçsfjkdasfjkçsdj";
 
 app.use(cors())
-
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 const DB = {
@@ -130,30 +131,40 @@ app.put("/game/:id", (req, res) => {
         }
 
     }
-})
+});
 
-app.post('auth', (req, res)=>{
+app.post("/auth", (req, res) => {
 
-    let {email,password} = req.body;
-    
-    if (email != undefined){
-        DB.users.find(u => u.email == email)
+    var {email, password} = req.body;
 
-        if (user != undefined){
-            if (user.password == password){
-                res.status = 200;
-                res.json({token: "TOKEN FALSO"})
-            }else{
-                res.status = 401
-                res.json({err: "Credenciais inválido"})
+    // console.log(req.body);
+
+    if (email != undefined) {
+        let user = DB.users.find(u => u.email == email)
+
+        if (user != undefined) {
+            if (user.password == password) {
+
+                jwt.sign({id: user.id, email: user.email}, JWTSecret,{expiresIn:'48h'},(err, token)=>{
+                    if (err) {
+                        res.status(400)
+                        res.json({err: "Falha interna"})
+                    }else{
+                        res.status(200)
+                        res.json({token: token})
+                    }
+                })
+            } else {
+                res.status(401)
+                res.json({ err: "Credenciais inválido" })
             }
-        }else{
-            res.status = 404;
-            res.json({err: "O e-mail enviado não existe"})
+        } else {
+            res.status(404);
+            res.json({ err: "O e-mail enviado não existe" })
         }
-    }else {
-        res.status = 400
-        res.json({err: "O E-mail é inválido"})        
+    } else {
+        res.status(400)
+        res.json({ err: "O E-mail é inválido" })
     }
 
 })
