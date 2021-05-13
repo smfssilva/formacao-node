@@ -77,22 +77,65 @@ const DB = {
 
 
 app.get("/games", auth, (req, res) => {
+
+
+    const HATEOAS = [
+        {
+            href: "http://localhost:8080/game/0",
+            method: "DELETE",
+            rel: "delete_game"
+        },
+        {
+            href: "http://localhost:8080/game/0",
+            method: "GET",
+            rel: "get_game"
+        },
+        {
+            href: "http://localhost:8080/auth",
+            method: "POST",
+            rel: "login"
+        }
+    ]
+
     res.statusCode = 200
-    res.json({user: req.loggedUser, games: DB.games})
+    res.json({user: req.loggedUser, games: DB.games, _links: HATEOAS})
 })
 
-app.get("/game/:id", (req, res) => {
+app.get("/game/:id", auth, (req, res) => {
 
     if (isNaN(req.params.id)) {
         res.send(400)
     } else {
         let id = parseInt(req.params.id)
 
+        const HATEOAS = [
+            {
+                href: "http://localhost:8080/game/"+id,
+                method: "DELETE",
+                rel: "delete_game"
+            },
+            {
+                href: "http://localhost:8080/game/"+id,
+                method: "PUT",
+                rel: "edit_game"
+            },
+            {
+                href: "http://localhost:8080/game/"+id,
+                method: "GET",
+                rel: "get_game"
+            },
+            {
+                href: "http://localhost:8080/games",
+                method: "GET",
+                rel: "get_all_games"
+            }
+        ]
+
         let game = DB.games.find(g => g.id == id)
 
         if (game != undefined) {
             res.statusCode = 200
-            res.json(game)
+            res.json({game, _links: HATEOAS})
         } else {
             res.sendStatus(404)
         }
@@ -112,7 +155,7 @@ app.post("/game", (req, res) => {
     res.sendStatus(200)
 })
 
-app.delete("/game/:id", (req, res) => {
+app.delete("/game/:id", auth, (req, res) => {
     if (isNaN(req.params.id)) {
         res.send(400)
     } else {
@@ -130,7 +173,7 @@ app.delete("/game/:id", (req, res) => {
     }
 })
 
-app.put("/game/:id", (req, res) => {
+app.put("/game/:id", auth, (req, res) => {
     if (isNaN(req.params.id)) {
         res.send(400)
     } else {
