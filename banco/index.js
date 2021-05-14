@@ -45,3 +45,25 @@ database.insert({nome: "Mists of noyah", preco: 25}).into("games")
         console.log(err);
     })
 */
+
+/*
+database.select(["id", "nome", "preco"])
+    .table("games")
+    .whereRaw("id = 2 or preco > 60")
+        .then(data => {
+            console.log(data);
+        })
+        .catch(err => {
+            console.log(err);
+    })
+*/
+
+/*
+database.raw("Select * from games")
+    .then(data => {
+        console.log(data[0][0].nome);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+*/
