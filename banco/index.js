@@ -76,7 +76,7 @@ database.where({id: 3}).delete().table("games")
         console.log(err);
     })
 */
-
+/*
 database.where({id: 5}).update({preco: 99.90}).table("games")
     .then(data => {
         console.log(data);
@@ -84,3 +84,13 @@ database.where({id: 5}).update({preco: 99.90}).table("games")
     .catch(err => {
         console.log(err);
     })
+*/
+
+database.select().table("games").orderBy("preco", "asc")
+    .then(data => {
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+
