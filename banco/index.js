@@ -86,6 +86,7 @@ database.where({id: 5}).update({preco: 99.90}).table("games")
     })
 */
 
+/*
 database.select().table("games").orderBy("preco", "asc")
     .then(data => {
         console.log(data);
@@ -93,4 +94,31 @@ database.select().table("games").orderBy("preco", "asc")
     .catch(err => {
         console.log(err);
     })
+*/
+
+/*
+database.insert({
+    nome: "Blizzard",
+    game_id: 5
+}).table("estudios")
+    .then(data => {
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+*/
+
+/*
+database.select(["games.*", "estudios.nome as Estudio"]).table("games").innerJoin("estudios", "estudios.game_id", "games.id")
+    .then(data => {
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+*/
+
+
+
 
