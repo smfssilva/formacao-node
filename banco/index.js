@@ -24,3 +24,24 @@ query = database.insert(dados).into("games")
         console.log(err);
     });
 */
+
+// database.select("*").table("games")
+/*
+database.select(["id", "preco"]).table("games")
+    .then(data => {
+        console.log(data);    
+    })
+    .catch(err => {
+        console.log(err);
+    })
+*/
+
+/*
+database.insert({nome: "Mists of noyah", preco: 25}).into("games")
+    .then(data => {
+        console.log(data);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+*/
